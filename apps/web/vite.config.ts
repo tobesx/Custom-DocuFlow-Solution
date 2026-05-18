@@ -5,9 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    host: true,
     proxy: {
       "/api": "http://localhost:3001",
       "/mock": "http://localhost:3001",
     },
+  },
+  preview: {
+    port: 5173,
+    host: true,
   },
 });
