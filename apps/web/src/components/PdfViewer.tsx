@@ -135,7 +135,6 @@ export function PdfViewer({ url, boundingBoxes }: Props) {
                       <div
                         key={bbox.fieldKey}
                         data-bbox="true"
-                        title={bbox.label}
                         className={`absolute rounded-sm transition-colors ${
                           isActive
                             ? "bg-blue-400/30 ring-1 ring-blue-500"
@@ -150,7 +149,16 @@ export function PdfViewer({ url, boundingBoxes }: Props) {
                         }}
                         onMouseEnter={() => setActiveFieldKey(bbox.fieldKey)}
                         onMouseLeave={() => setActiveFieldKey(null)}
-                      />
+                      >
+                        {isActive && (
+                          <span
+                            className="absolute left-0 bg-[#1c2b3a] text-white text-[10px] font-medium px-1.5 py-0.5 rounded-sm whitespace-nowrap shadow-sm z-10"
+                            style={{ bottom: "calc(100% + 2px)", pointerEvents: "none" }}
+                          >
+                            {bbox.label}
+                          </span>
+                        )}
+                      </div>
                     );
                   })}
               </div>

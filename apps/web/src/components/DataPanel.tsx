@@ -67,7 +67,8 @@ export function DataPanel({ extractedData }: Props) {
           </button>
         }
       >
-        <p className="font-semibold text-gray-900 mb-2">{customer.name}</p>
+        <p className="font-semibold text-gray-900 mb-1">{customer.name}</p>
+        <p className="text-sm text-gray-600 mb-0.5">{customer.email}</p>
         <p className="text-sm text-gray-600">VAT Number: {customer.vatNumber}</p>
       </DataCard>
 
