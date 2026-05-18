@@ -1,6 +1,17 @@
 import type { ExtractedData, BoundingBox } from "@docuflow/types";
 import { useDocuFlowStore } from "../store/useDocuFlowStore";
 
+function DataCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 mb-4">
+      <div className="px-5 py-3.5 border-b border-gray-100">
+        <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
+      </div>
+      <div className="px-5 py-4">{children}</div>
+    </div>
+  );
+}
+
 interface FieldRowProps {
   fieldKey: string;
   label: string;
@@ -13,22 +24,14 @@ function FieldRow({ fieldKey, label, value }: FieldRowProps) {
 
   return (
     <div
-      className={`flex gap-3 px-4 py-2 rounded-md cursor-default transition-colors ${
-        isActive ? "bg-blue-50 ring-1 ring-inset ring-blue-200" : "hover:bg-gray-50"
+      className={`py-2 -mx-5 px-5 transition-colors cursor-default rounded ${
+        isActive ? "bg-blue-50" : "hover:bg-gray-50"
       }`}
       onMouseEnter={() => setActiveFieldKey(fieldKey)}
       onMouseLeave={() => setActiveFieldKey(null)}
     >
-      <span className="text-xs text-gray-400 w-36 shrink-0 pt-0.5 leading-5">{label}</span>
-      <span className="text-sm text-gray-900 leading-5">{value}</span>
-    </div>
-  );
-}
-
-function SectionHeader({ title }: { title: string }) {
-  return (
-    <div className="px-4 pt-5 pb-1">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{title}</p>
+      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+      <p className="text-sm text-gray-900">{value}</p>
     </div>
   );
 }
@@ -43,58 +46,53 @@ export function DataPanel({ extractedData }: Props) {
   const { customer, supplier, reference, deliveryDate, documentType, orderLines } = extractedData;
 
   return (
-    <div className="py-2">
-      <SectionHeader title="Document" />
-      <FieldRow fieldKey="reference" label="Reference" value={reference} />
-      <FieldRow fieldKey="deliveryDate" label="Delivery date" value={deliveryDate} />
-      <FieldRow fieldKey="documentType" label="Document type" value={documentType} />
+    <div className="p-4">
+      <DataCard title="Customer">
+        <p className="font-semibold text-gray-900 mb-3">{customer.name}</p>
+        <FieldRow fieldKey="customer.email" label="Email" value={customer.email} />
+        <FieldRow fieldKey="customer.phone" label="Phone" value={customer.phone} />
+        <FieldRow fieldKey="customer.address" label="Address" value={customer.address} />
+        <FieldRow fieldKey="customer.vatNumber" label="VAT number" value={customer.vatNumber} />
+      </DataCard>
 
-      <SectionHeader title="Customer" />
-      <FieldRow fieldKey="customer.name" label="Name" value={customer.name} />
-      <FieldRow fieldKey="customer.email" label="Email" value={customer.email} />
-      <FieldRow fieldKey="customer.phone" label="Phone" value={customer.phone} />
-      <FieldRow fieldKey="customer.address" label="Address" value={customer.address} />
-      <FieldRow fieldKey="customer.vatNumber" label="VAT number" value={customer.vatNumber} />
+      <DataCard title="Supplier">
+        <FieldRow fieldKey="supplier.name" label="Name" value={supplier.name} />
+        <FieldRow fieldKey="supplier.phone" label="Phone" value={supplier.phone} />
+        <FieldRow fieldKey="supplier.address" label="Address" value={supplier.address} />
+      </DataCard>
 
-      <SectionHeader title="Supplier" />
-      <FieldRow fieldKey="supplier.name" label="Name" value={supplier.name} />
-      <FieldRow fieldKey="supplier.phone" label="Phone" value={supplier.phone} />
-      <FieldRow fieldKey="supplier.address" label="Address" value={supplier.address} />
+      <DataCard title="Order details">
+        <FieldRow fieldKey="reference" label="Reference" value={reference} />
+        <FieldRow fieldKey="deliveryDate" label="Delivery date" value={deliveryDate} />
+        <FieldRow fieldKey="documentType" label="Document type" value={documentType} />
+      </DataCard>
 
-      <SectionHeader title="Order lines" />
-      <div className="mx-4 mt-1 rounded-md border border-gray-100 overflow-hidden">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="bg-gray-50 text-gray-400 text-left">
-              <th className="px-3 py-2 font-medium">Art. no.</th>
-              <th className="px-3 py-2 font-medium">Description</th>
-              <th className="px-3 py-2 font-medium text-right">Qty</th>
-              <th className="px-3 py-2 font-medium text-right">Price</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {orderLines.map((line, i) => {
-              const fieldKey = `orderLines[${i}]`;
-              const isActive = activeFieldKey === fieldKey;
-              return (
-                <tr
-                  key={i}
-                  className={`transition-colors cursor-default ${
-                    isActive ? "bg-blue-50 ring-1 ring-inset ring-blue-200" : "hover:bg-gray-50"
-                  }`}
-                  onMouseEnter={() => setActiveFieldKey(fieldKey)}
-                  onMouseLeave={() => setActiveFieldKey(null)}
-                >
-                  <td className="px-3 py-2 text-gray-500">{line.articleNumber}</td>
-                  <td className="px-3 py-2 text-gray-900">{line.description}</td>
-                  <td className="px-3 py-2 text-gray-700 text-right">{line.quantity} {line.unit}</td>
-                  <td className="px-3 py-2 text-gray-700 text-right">€ {line.price.toFixed(2)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <DataCard title="Order lines">
+        <div className="flex text-xs font-medium text-gray-400 pb-2 mb-1 border-b border-gray-100">
+          <span className="flex-1">Product</span>
+          <span>Quantity</span>
+        </div>
+        {orderLines.map((line, i) => {
+          const fieldKey = `orderLines[${i}]`;
+          const isActive = activeFieldKey === fieldKey;
+          return (
+            <div
+              key={i}
+              className={`flex items-center py-3 border-b border-gray-50 last:border-0 -mx-5 px-5 transition-colors cursor-default ${
+                isActive ? "bg-blue-50" : "hover:bg-gray-50"
+              }`}
+              onMouseEnter={() => setActiveFieldKey(fieldKey)}
+              onMouseLeave={() => setActiveFieldKey(null)}
+            >
+              <div className="flex-1 min-w-0 pr-4">
+                <p className="text-sm text-gray-900 truncate">{line.description}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{line.supplierReference}</p>
+              </div>
+              <span className="text-sm font-medium text-gray-700 shrink-0">{line.quantity}</span>
+            </div>
+          );
+        })}
+      </DataCard>
     </div>
   );
 }
