@@ -1,10 +1,15 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { DocumentListPage } from "./pages/DocumentListPage";
+import { DocumentReviewPage } from "./pages/DocumentReviewPage";
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">DocuFlow</h1>
-        <p className="mt-2 text-gray-500">Dossche Mills — Document Review</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DocumentListPage />} />
+        <Route path="/documents/:id" element={<DocumentReviewPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
