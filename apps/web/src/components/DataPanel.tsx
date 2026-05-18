@@ -45,31 +45,31 @@ export function DataPanel({ extractedData }: Props) {
   return (
     <div className="py-2">
       <SectionHeader title="Document" />
-      <FieldRow fieldKey="reference" label="Referentie" value={reference} />
-      <FieldRow fieldKey="deliveryDate" label="Leveringsdatum" value={deliveryDate} />
-      <FieldRow fieldKey="documentType" label="Type" value={documentType} />
+      <FieldRow fieldKey="reference" label="Reference" value={reference} />
+      <FieldRow fieldKey="deliveryDate" label="Delivery date" value={deliveryDate} />
+      <FieldRow fieldKey="documentType" label="Document type" value={documentType} />
 
-      <SectionHeader title="Klant" />
-      <FieldRow fieldKey="customer.name" label="Naam" value={customer.name} />
-      <FieldRow fieldKey="customer.email" label="E-mail" value={customer.email} />
-      <FieldRow fieldKey="customer.phone" label="Telefoon" value={customer.phone} />
-      <FieldRow fieldKey="customer.address" label="Adres" value={customer.address} />
-      <FieldRow fieldKey="customer.vatNumber" label="BTW-nummer" value={customer.vatNumber} />
+      <SectionHeader title="Customer" />
+      <FieldRow fieldKey="customer.name" label="Name" value={customer.name} />
+      <FieldRow fieldKey="customer.email" label="Email" value={customer.email} />
+      <FieldRow fieldKey="customer.phone" label="Phone" value={customer.phone} />
+      <FieldRow fieldKey="customer.address" label="Address" value={customer.address} />
+      <FieldRow fieldKey="customer.vatNumber" label="VAT number" value={customer.vatNumber} />
 
-      <SectionHeader title="Leverancier" />
-      <FieldRow fieldKey="supplier.name" label="Naam" value={supplier.name} />
-      <FieldRow fieldKey="supplier.phone" label="Telefoon" value={supplier.phone} />
-      <FieldRow fieldKey="supplier.address" label="Adres" value={supplier.address} />
+      <SectionHeader title="Supplier" />
+      <FieldRow fieldKey="supplier.name" label="Name" value={supplier.name} />
+      <FieldRow fieldKey="supplier.phone" label="Phone" value={supplier.phone} />
+      <FieldRow fieldKey="supplier.address" label="Address" value={supplier.address} />
 
-      <SectionHeader title="Bestelregels" />
+      <SectionHeader title="Order lines" />
       <div className="mx-4 mt-1 rounded-md border border-gray-100 overflow-hidden">
         <table className="w-full text-xs">
           <thead>
             <tr className="bg-gray-50 text-gray-400 text-left">
-              <th className="px-3 py-2 font-medium">Art.nr</th>
-              <th className="px-3 py-2 font-medium">Omschrijving</th>
-              <th className="px-3 py-2 font-medium text-right">Aantal</th>
-              <th className="px-3 py-2 font-medium text-right">Prijs</th>
+              <th className="px-3 py-2 font-medium">Art. no.</th>
+              <th className="px-3 py-2 font-medium">Description</th>
+              <th className="px-3 py-2 font-medium text-right">Qty</th>
+              <th className="px-3 py-2 font-medium text-right">Price</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">

@@ -1,12 +1,8 @@
+import "../lib/pdfWorker";
 import { useState, useRef, useEffect } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document, Page } from "react-pdf";
 import { useDocuFlowStore } from "../store/useDocuFlowStore";
 import type { BoundingBox } from "@docuflow/types";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
 
 interface Props {
   url: string;
