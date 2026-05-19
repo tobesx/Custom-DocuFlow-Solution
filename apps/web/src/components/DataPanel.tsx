@@ -1,4 +1,5 @@
-import { Pencil, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Pencil, Calendar, Undo2 } from "lucide-react";
 import type { ExtractedData, BoundingBox } from "@docuflow/types";
 import { useDocuFlowStore } from "../store/useDocuFlowStore";
 
@@ -40,6 +41,23 @@ function InputField({ fieldKey, value, icon }: {
   );
 }
 
+// ── Order line correction types ───────────────
+
+type Correction = { description: string; supplierReference: string };
+
+const MOCK_PRODUCTS: Correction[] = [
+  { description: "Tarwebloem T55", supplierReference: "TW-T55-001" },
+  { description: "Roggebloem Type 130", supplierReference: "RG-130-002" },
+  { description: "Speltbloem fijn", supplierReference: "SP-BL-003" },
+  { description: "Volkorenmeel tarwe", supplierReference: "VK-ML-004" },
+  { description: "Maizena premium", supplierReference: "MZ-NT-005" },
+  { description: "Rijstmeel gluten-free", supplierReference: "RJ-ML-006" },
+  { description: "Glutenvrije bakmix", supplierReference: "GV-MX-007" },
+  { description: "Patisseriemeel fijn", supplierReference: "PT-ML-008" },
+];
+
+// ── Props ────────────────────────────────────
+
 interface Props {
   extractedData: ExtractedData;
   boundingBoxes: BoundingBox[];
@@ -47,6 +65,8 @@ interface Props {
 
 export function DataPanel({ extractedData }: Props) {
   const { customer, reference, deliveryDate, orderLines } = extractedData;
+  const [corrections, setCorrections] = useState<Record<number, Correction>>({});
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
   function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-US", {
@@ -54,6 +74,23 @@ export function DataPanel({ extractedData }: Props) {
       day: "numeric",
       year: "numeric",
     });
+  }
+
+  function handleCorrect(idx: number, product: Correction) {
+    setCorrections((prev) => ({ ...prev, [idx]: product }));
+    setSelectedIdx(null);
+  }
+
+  function handleRevert(idx: number) {
+    setCorrections((prev) => {
+      const next = { ...prev };
+      delete next[idx];
+      return next;
+    });
+  }
+
+  function toggleRow(idx: number) {
+    setSelectedIdx((prev) => (prev === idx ? null : idx));
   }
 
   return (
@@ -95,13 +132,58 @@ export function DataPanel({ extractedData }: Props) {
             <span className="flex-1 text-xs font-bold text-gray-700">Product</span>
             <span className="text-xs font-bold text-gray-700">Quantity</span>
           </div>
-          {orderLines.map((line, i) => {
-            const fieldKey = `orderLines[${i}]`;
-            return (
-              <OrderLineRow key={i} fieldKey={fieldKey} line={line} />
-            );
-          })}
+          {orderLines.map((line, i) => (
+            <OrderLineRow
+              key={i}
+              fieldKey={`orderLines[${i}]`}
+              line={line}
+              correction={corrections[i] ?? null}
+              isSelected={selectedIdx === i}
+              onToggle={() => toggleRow(i)}
+              onRevert={() => handleRevert(i)}
+            />
+          ))}
         </div>
+
+        {/* Product picker — shown below table when a row is selected */}
+        {selectedIdx !== null && (
+          <div className="mt-3 border border-amber-200 rounded-md overflow-hidden bg-white">
+            <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-200 flex items-center justify-between">
+              <span className="text-xs font-bold text-amber-900">
+                Choose product for line {selectedIdx + 1}
+              </span>
+              <button
+                className="text-xs text-amber-600 hover:text-amber-800 transition-colors"
+                onClick={() => setSelectedIdx(null)}
+              >
+                Close
+              </button>
+            </div>
+            <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
+              {MOCK_PRODUCTS.map((product) => {
+                const isCurrent =
+                  corrections[selectedIdx]?.supplierReference === product.supplierReference;
+                return (
+                  <button
+                    key={product.supplierReference}
+                    className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ${
+                      isCurrent ? "bg-amber-50" : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleCorrect(selectedIdx, product)}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-900">{product.description}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{product.supplierReference}</p>
+                    </div>
+                    {isCurrent && (
+                      <span className="text-xs font-medium text-amber-700 shrink-0">Selected</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </DataCard>
     </div>
   );
@@ -110,26 +192,60 @@ export function DataPanel({ extractedData }: Props) {
 function OrderLineRow({
   fieldKey,
   line,
+  correction,
+  isSelected,
+  onToggle,
+  onRevert,
 }: {
   fieldKey: string;
   line: { description: string; supplierReference: string; quantity: number };
+  correction: Correction | null;
+  isSelected: boolean;
+  onToggle: () => void;
+  onRevert: () => void;
 }) {
   const { activeFieldKey, setActiveFieldKey } = useDocuFlowStore();
   const isActive = activeFieldKey === fieldKey;
+  const isCorrected = correction !== null;
+  const display = correction ?? line;
 
   return (
     <div
-      className={`flex items-center px-4 py-3 border-b border-gray-100 last:border-0 transition-colors cursor-default ${
-        isActive ? "bg-blue-50" : "hover:bg-gray-50"
+      className={`border-b border-gray-100 last:border-0 transition-colors cursor-pointer ${
+        isActive ? "bg-blue-50" : isSelected ? "bg-amber-50" : "hover:bg-gray-50"
       }`}
       onMouseEnter={() => setActiveFieldKey(fieldKey)}
       onMouseLeave={() => setActiveFieldKey(null)}
+      onClick={onToggle}
     >
-      <div className="flex-1 min-w-0 pr-6">
-        <p className="text-sm text-gray-900 truncate">{line.description}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{line.supplierReference}</p>
+      <div className="flex items-center px-4 py-3">
+        <div className="flex-1 min-w-0 pr-3">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <p className="text-sm text-gray-900 truncate">{display.description}</p>
+            {isCorrected && (
+              <span className="shrink-0 text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full leading-none">
+                Modified
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 mt-0.5">{display.supplierReference}</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isCorrected && (
+            <button
+              className="p-1 text-gray-400 hover:text-gray-700 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRevert();
+              }}
+              title="Revert to OCR result"
+            >
+              <Undo2 size={13} />
+            </button>
+          )}
+          <span className="text-sm text-gray-900 min-w-[2rem] text-right">{line.quantity}</span>
+        </div>
       </div>
-      <span className="text-sm text-gray-900 shrink-0">{line.quantity}</span>
     </div>
   );
 }
