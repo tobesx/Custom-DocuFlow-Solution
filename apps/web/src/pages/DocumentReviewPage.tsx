@@ -59,7 +59,7 @@ export function DocumentReviewPage() {
         {/* Data panel — wider, ~40% */}
         <div
           className="overflow-y-auto bg-gray-100 border-l border-gray-200 shrink-0"
-          style={{ width: "min(42%, 520px)", minWidth: "360px" }}
+          style={{ width: "min(46%, 580px)", minWidth: "380px" }}
         >
           <DataPanel extractedData={doc.extractedData} boundingBoxes={doc.boundingBoxes} />
         </div>
