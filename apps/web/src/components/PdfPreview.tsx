@@ -25,7 +25,10 @@ export function PdfPreview({ url }: Props) {
     const el = containerRef.current;
     if (!el) return;
     const observer = new ResizeObserver(([entry]) => {
-      setBaseWidth(Math.min(entry.contentRect.width - 32, 520));
+      const { width, height } = entry.contentRect;
+      setBaseWidth(
+        Math.max(200, Math.min(width - 32, (height - 48) / 1.414))
+      );
     });
     observer.observe(el);
     return () => observer.disconnect();

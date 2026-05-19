@@ -264,9 +264,18 @@ function OrderLineRow({
   const isActive = activeFieldKey === fieldKey;
   const isCorrected = correction !== null;
   const display = correction ?? line;
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  // Scroll into view when activated from PDF viewer hover
+  useEffect(() => {
+    if (isActive) {
+      rowRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [isActive]);
 
   return (
     <div
+      ref={rowRef}
       className={`border-b border-gray-100 last:border-0 transition-colors cursor-pointer ${
         isActive ? "bg-blue-50" : isSelected ? "bg-amber-50" : "hover:bg-gray-50"
       }`}
