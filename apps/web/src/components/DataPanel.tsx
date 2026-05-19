@@ -26,9 +26,17 @@ function InputField({ fieldKey, value, icon }: {
 }) {
   const { activeFieldKey, setActiveFieldKey } = useDocuFlowStore();
   const isActive = activeFieldKey === fieldKey;
+  const fieldRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isActive) {
+      fieldRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [isActive]);
 
   return (
     <div
+      ref={fieldRef}
       className={`flex items-center gap-2 border rounded-md px-3 py-1.5 transition-colors ${
         isActive ? "border-blue-400 bg-blue-50" : "border-gray-200 bg-white"
       }`}
