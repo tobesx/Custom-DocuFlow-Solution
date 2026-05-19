@@ -45,16 +45,30 @@ function InputField({ fieldKey, value, icon }: {
 
 type Correction = { description: string; supplierReference: string };
 
-const MOCK_PRODUCTS: Correction[] = [
-  { description: "Tarwebloem T55", supplierReference: "TW-T55-001" },
-  { description: "Roggebloem Type 130", supplierReference: "RG-130-002" },
-  { description: "Speltbloem fijn", supplierReference: "SP-BL-003" },
-  { description: "Volkorenmeel tarwe", supplierReference: "VK-ML-004" },
-  { description: "Maizena premium", supplierReference: "MZ-NT-005" },
-  { description: "Rijstmeel gluten-free", supplierReference: "RJ-ML-006" },
-  { description: "Glutenvrije bakmix", supplierReference: "GV-MX-007" },
-  { description: "Patisseriemeel fijn", supplierReference: "PT-ML-008" },
+const PRODUCT_CATALOG: Correction[] = [
+  { description: "IJsbeker mini aardbeien VANGILS 36x80ml", supplierReference: "0024" },
+  { description: "IJsbeker mini vanille VANGILS 36x80ml", supplierReference: "05152" },
+  { description: "IJsbeker mini stracciatella VANGILS 36x80ml", supplierReference: "14522" },
+  { description: "Black maxi stick VANGILS 12x120ml", supplierReference: "05071" },
+  { description: "Coupe café glacé VANGILS 12x150ml", supplierReference: "0020" },
+  { description: "Weekend bavarois aardbei VANGILS 24x140ml", supplierReference: "0618" },
+  { description: "Coupe vanille luxe VANGILS 12x150ml", supplierReference: "00230" },
+  { description: "Mousse suikervrij chocolade STEVIA 12x120ml", supplierReference: "03611" },
+  { description: "IJsbeker banaan roomijs VANGILS 24x120ml", supplierReference: "07560" },
+  { description: "IJsbeker citroen roomijs VANGILS 24x120ml", supplierReference: "07550" },
+  { description: "IJsbeker pistache roomijs VANGILS 24x120ml", supplierReference: "07580" },
+  { description: "IJsbeker mokka roomijs VANGILS 24x120ml", supplierReference: "07590" },
+  { description: "IJsstaart vanille/mokka VANGILS 1500ml", supplierReference: "02370" },
+  { description: "IJsbeker dame blanche roomijs VANGILS 24x120ml", supplierReference: "07610" },
+  { description: "IJsbeker advocaat VANGILS 24x120ml", supplierReference: "07540" },
+  { description: "IJsbeker aardbei roomijs VANGILS 24x120ml", supplierReference: "07520" },
+  { description: "IJsbeker vanille STEVIA VANGILS 16x100ml", supplierReference: "03090" },
+  { description: "IJsbeker chocolade STEVIA VANGILS 16x100ml", supplierReference: "03092" },
+  { description: "IJsbeker dame blanche STEVIA VANGILS 16x100ml", supplierReference: "03093" },
+  { description: "IJsbeker assorti STEVIA VANGILS 16x100ml", supplierReference: "03094" },
 ];
+
+const POPUP_HEIGHT = 210; // search bar ~42px + max-h-36 list 144px + borders/padding
 
 interface PopupPos { top: number; left: number; width: number; }
 
@@ -103,9 +117,27 @@ export function DataPanel({ extractedData }: Props) {
       return;
     }
     const rect = e.currentTarget.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Open downward if enough room, otherwise flip upward
+    let top =
+      spaceBelow >= POPUP_HEIGHT || spaceBelow >= spaceAbove
+        ? rect.bottom + 4
+        : rect.top - POPUP_HEIGHT - 4;
+
+    // Clamp vertically so popup never leaves viewport
+    top = Math.max(8, Math.min(top, window.innerHeight - POPUP_HEIGHT - 8));
+
+    // Clamp horizontally
+    const left = Math.max(
+      8,
+      Math.min(rect.left, window.innerWidth - rect.width - 8)
+    );
+
     setSelectedIdx(idx);
     setSearchQuery("");
-    setPopupPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    setPopupPos({ top, left, width: rect.width });
   }
 
   function handleCorrect(idx: number, product: Correction) {
@@ -123,7 +155,7 @@ export function DataPanel({ extractedData }: Props) {
     });
   }
 
-  const filteredProducts = MOCK_PRODUCTS.filter(
+  const filteredProducts = PRODUCT_CATALOG.filter(
     (p) =>
       searchQuery.trim() === "" ||
       p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
