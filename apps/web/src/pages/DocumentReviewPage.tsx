@@ -42,7 +42,6 @@ export function DocumentReviewPage() {
         <h1 className="flex-1 text-lg font-semibold text-gray-900 truncate">
           {doc.extractedData.customer.name}
         </h1>
-        <StatusBadge status={doc.status} />
         <button className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded transition-colors">
           <Save size={14} />
           Save
