@@ -8,11 +8,13 @@ export default function App() {
     <BrowserRouter>
       <div className="h-screen flex flex-col">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<DocumentListPage />} />
-          <Route path="/documents/:id" element={<DocumentReviewPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div className="flex-1 overflow-hidden flex flex-col">
+          <Routes>
+            <Route path="/" element={<DocumentListPage />} />
+            <Route path="/documents/:id" element={<DocumentReviewPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </div>
     </BrowserRouter>
   );

@@ -46,8 +46,8 @@ export function DocumentListPage() {
   const pendingCount = documents?.filter((d) => d.status === "pending").length ?? 0;
 
   return (
-    <div className="flex-1 bg-gray-100 p-5 overflow-auto">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col" style={{ height: "calc(100vh - 60px)" }}>
+    <div className="flex-1 bg-gray-100 p-5 overflow-hidden flex flex-col">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col flex-1 min-h-0">
 
         {/* Card header */}
         <div className="flex items-start justify-between px-6 pt-5 pb-3 shrink-0">
